@@ -1,7 +1,8 @@
-import './sass/main.scss';
-import imagesTpl from './templates/photo';
+
+import './css/main.css';
+import newsApiService from './js/news-service';
+import imagesTpl from './templates/photo.hbs'
 import Notiflix from "notiflix";
-import NewsApiService from './js/news-service';
 
 const refs = {
     searchForm: document.querySelector('.search-form'),
@@ -9,41 +10,32 @@ const refs = {
     loadMoreButton: document.querySelector('.load-more'),
 }
 
+refs.searchForm.addEventListener('submit', onSearch)
+refs.loadMoreButton.addEventListener('click', loadMore)
 
-const newsApiService = new NewsApiService();
-
-// console.log(newsApiService);
-
-refs.searchForm.addEventListener('submit', onSearch);
-refs.loadMoreButton.addEventListener('click', onLoadMore);
-
-// refs.loadMoreButton.disabled = true;
+const newImageService = new newsApiService();
 
 async function onSearch(e) {
     e.preventDefault();
-    // refs.loadMoreButton.disabled = false;
 
-    newsApiService.query = e.currentTarget.elements.searchQuery.value;
-    
-    if (newsApiService.query === '') {
+    newImageService.query = e.currentTarget.elements.searchQuery.value;
+
+    if (newImageService.query === '') {
         return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
     }
 
-    newsApiService.resetPage();
-    const response = await newsApiService.fetchImages();
-
-    clearImagePage();
-
-    return appendImages(response);
-  // newsApiService.fetchImages();
+    newImageService.resetPage();
+    const response = await newImageService.fetchImages();
+    clearImageContainer();
+    return await imageMarkup(response);
 }
 
-async function onLoadMore() {
-    const response = await newsApiService.fetchImages();
-    return appendImages(response);
+async function loadMore() {
+    const response = await newImageService.fetchImages();
+    return imageMarkup(response);
 }
 
-function appendImages(images) {
+function imageMarkup(images) {
     refs.cardGallery.insertAdjacentHTML('beforeend', imagesTpl(images))
     refs.loadMoreButton.classList.remove('is-hidden')
 
@@ -56,9 +48,8 @@ function appendImages(images) {
         refs.loadMoreButton.classList.add('is-hidden')
         Notiflix.Notify.info('We are sorry, but you have reached the end of search results.');
     }
-
 }
 
-function clearImagePage(){
-    refs.cardGallery.innerHTML = ''
+function clearImageContainer() {
+    refs.cardGallery.innerHTML = '';
 }
