@@ -1,12 +1,7 @@
 import './sass/main.scss';
-// import photoCard from '../templates/photo-card';
+import imagesTpl from './templates/photo';
 import Notiflix from "notiflix";
 import NewsApiService from './js/news-service';
-
-
-const newsApiService = new NewsApiService();
-
-console.log(newsApiService);
 
 const refs = {
     searchForm: document.querySelector('.search-form'),
@@ -15,11 +10,18 @@ const refs = {
 }
 
 
+const newsApiService = new NewsApiService();
+
+// console.log(newsApiService);
+
 refs.searchForm.addEventListener('submit', onSearch);
 refs.loadMoreButton.addEventListener('click', onLoadMore);
 
-function onSearch(e) {
+// refs.loadMoreButton.disabled = true;
+
+async function onSearch(e) {
     e.preventDefault();
+    // refs.loadMoreButton.disabled = false;
 
     newsApiService.query = e.currentTarget.elements.searchQuery.value;
     
@@ -27,9 +29,36 @@ function onSearch(e) {
         return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
     }
 
-    newsApiService.fetchImages();
-};
+    newsApiService.resetPage();
+    const response = await newsApiService.fetchImages();
 
-function onLoadMore() {
-    newsApiService.fetchImages();
+    clearImagePage();
+
+    return appendImages(response);
+  // newsApiService.fetchImages();
+}
+
+async function onLoadMore() {
+    const response = await newsApiService.fetchImages();
+    return appendImages(response);
+}
+
+function appendImages(images) {
+    refs.cardGallery.insertAdjacentHTML('beforeend', imagesTpl(images))
+    refs.loadMoreButton.classList.remove('is-hidden')
+
+    if (images.length === 0) {
+        refs.loadMoreButton.classList.add('is-hidden')
+        return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+    }
+
+    if (images.length < 40) {
+        refs.loadMoreButton.classList.add('is-hidden')
+        Notiflix.Notify.info('We are sorry, but you have reached the end of search results.');
+    }
+
+}
+
+function clearImagePage(){
+    refs.cardGallery.innerHTML = ''
 }
