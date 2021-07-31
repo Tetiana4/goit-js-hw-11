@@ -8,6 +8,7 @@ const refs = {
     searchForm: document.querySelector('.search-form'),
     cardGallery: document.querySelector('.gallery'),
     loadMoreButton: document.querySelector('.load-more'),
+    submitBtn: document.querySelector('.submit-btn'),
 }
 
 refs.searchForm.addEventListener('submit', onSearch)
@@ -23,10 +24,12 @@ async function onSearch(e) {
     if (newImageService.query === '') {
         return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
     }
-
+    
     newImageService.resetPage();
     const response = await newImageService.fetchImages();
     clearImageContainer();
+
+    
     return await imageMarkup(response);
 }
 
@@ -38,6 +41,9 @@ async function loadMore() {
 function imageMarkup(images) {
     refs.cardGallery.insertAdjacentHTML('beforeend', imagesTpl(images))
     refs.loadMoreButton.classList.remove('is-hidden')
+
+    refs.submitBtn.hide()
+     
 
     if (images.length === 0) {
         refs.loadMoreButton.classList.add('is-hidden')
