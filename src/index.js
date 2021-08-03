@@ -3,13 +3,8 @@ import './css/main.css';
 import newsApiService from './js/news-service';
 import imagesTpl from './templates/photo.hbs'
 import Notiflix from "notiflix";
+import { refs } from './js/api';
 
-const refs = {
-    searchForm: document.querySelector('.search-form'),
-    cardGallery: document.querySelector('.gallery'),
-    loadMoreButton: document.querySelector('.load-more'),
-    submitBtn: document.querySelector('.submit-btn'),
-}
 
 refs.searchForm.addEventListener('submit', onSearch)
 refs.loadMoreButton.addEventListener('click', loadMore)
