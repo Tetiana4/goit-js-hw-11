@@ -3,7 +3,7 @@ import './css/main.css';
 import newsApiService from './js/news-service';
 import imagesTpl from './templates/photo.hbs'
 import Notiflix from "notiflix";
-import { refs } from './js/api';
+import { refs } from './js/refs';
 
 
 refs.searchForm.addEventListener('submit', onSearch)
@@ -37,7 +37,7 @@ function imageMarkup(images) {
     refs.cardGallery.insertAdjacentHTML('beforeend', imagesTpl(images))
     refs.loadMoreButton.classList.remove('is-hidden')
 
-    refs.submitBtn.hide()
+    // refs.submitBtn.hide()
      
 
     if (images.length === 0) {
@@ -50,6 +50,7 @@ function imageMarkup(images) {
         Notiflix.Notify.info('We are sorry, but you have reached the end of search results.');
     }
 }
+// refs.submitBtn.hide()
 
 function clearImageContainer() {
     refs.cardGallery.innerHTML = '';
